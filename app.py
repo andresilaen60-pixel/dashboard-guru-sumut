@@ -9,7 +9,7 @@ if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 
 if not st.session_state["logged_in"]:
-    st.title("🔐 Login Dashboard Disdik Sumut")
+    st.title("🔐 Login Dashboard Kenaikan Pangkat Disdik Sumut")
     with st.form("login_form"):
         user = st.text_input("Username")
         pasw = st.text_input("Password", type="password")
@@ -77,7 +77,7 @@ else:
             df_filtered = df_filtered[df_filtered[kolom_status] == filter_status]
 
         # --- TAMPILAN UTAMA ---
-        st.title("📊 Dashboard Database Guru Dinas Pendidikan Sumut")
+        st.title("📊 Dashboard Kenaikan Pangkat Disdik Sumut")
         st.caption("Menampilkan Data dari Sheet: **Data_Usulan_KP**")
         st.markdown("---")
         
@@ -97,3 +97,4 @@ else:
 
     except Exception as e:
         st.error(f"Terjadi Kesalahan: {e}")
+
