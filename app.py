@@ -9,7 +9,7 @@ if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 
 if not st.session_state["logged_in"]:
-    st.title("🔐 Login Dashboard Kenaikan Pangkat Disdik Sumut")
+    st.title("🔐 Login Dashboard Monitoring Kenaikan Pangkat Disdik Sumut")
     with st.form("login_form"):
         user = st.text_input("Username")
         pasw = st.text_input("Password", type="password")
@@ -97,4 +97,5 @@ else:
 
     except Exception as e:
         st.error(f"Terjadi Kesalahan: {e}")
+
 
