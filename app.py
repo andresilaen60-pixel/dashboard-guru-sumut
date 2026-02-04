@@ -42,7 +42,7 @@ else:
         list_golongan = ["Semua"] + sorted(df[kolom_gol].dropna().unique().tolist())
         filter_golongan = st.sidebar.selectbox("📈 Filter Golongan", list_golongan)
 
-        # 3. Filter Periode Usulan (Jan - Des 2026)
+        # 3. Filter Periode Usulan
         list_periode = ["Semua", "Januari 2026", "Februari 2026", "Maret 2026", "April 2026", "Mei 2026", 
                         "Juni 2026", "Juli 2026", "Agustus 2026", "September 2026", "Oktober 2026", 
                         "November 2026", "Desember 2026"]
@@ -55,7 +55,6 @@ else:
             filter_status = st.sidebar.selectbox("📁 Status Berkas", list_status)
         else:
             filter_status = "Semua"
-            st.sidebar.info("Kolom 'Status Berkas' tidak ditemukan")
 
         # --- LOGIKA PENYARINGAN DATA ---
         df_filtered = df.copy()
@@ -68,7 +67,7 @@ else:
             df_filtered = df_filtered[df_filtered['Jabatan'] == filter_jabatan]
         
         if filter_golongan != "Semua":
-            df_filtered = df_filtered[df_filtered[kolom_gol] == filter_golongan] # Perbaikan kutipan di sini
+            df_filtered = df_filtered[df_filtered[kolom_gol] == filter_golongan]
             
         if filter_periode != "Semua":
             kolom_periode = 'Periode Usulan' if 'Periode Usulan' in df.columns else df.columns[3]
@@ -79,7 +78,7 @@ else:
 
         # --- TAMPILAN UTAMA ---
         st.title("📊 Dashboard Database Guru Dinas Pendidikan Sumut")
-        st.caption("Sumber Data: Sheet **Data_Usulan_KP**")
+        st.caption("Menampilkan Data dari Sheet: **Data_Usulan_KP**")
         st.markdown("---")
         
         col1, col2, col3 = st.columns(3)
@@ -90,8 +89,8 @@ else:
         st.subheader("📋 Rekapitulasi Data Usulan")
         st.dataframe(df_filtered, use_container_width=True)
 
-        # --- TOMBOL LOGOUT (Posisi Paling Bawah) ---
-        st.sidebar.markdown("<br>" * 12, unsafe_allow_html=True)
+        # --- TOMBOL LOGOUT (Posisi yang Sudah Dinaikkan Sedikit) ---
+        st.sidebar.markdown("<br>" * 5, unsafe_allow_html=True) # Jarak dikurangi agar lebih naik
         if st.sidebar.button("🚪 Keluar / Logout", use_container_width=True):
             st.session_state["logged_in"] = False
             st.rerun()
