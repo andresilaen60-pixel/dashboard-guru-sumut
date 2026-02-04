@@ -77,7 +77,7 @@ else:
             df_filtered = df_filtered[df_filtered[kolom_status] == filter_status]
 
         # --- TAMPILAN UTAMA ---
-        st.title("📊 Dashboard Kenaikan Pangkat Disdik Sumut")
+        st.title("📊 Dashboard Monitoring Kenaikan Pangkat Disdik Sumut")
         st.caption("Menampilkan Data dari Sheet: **Data_Usulan_KP**")
         st.markdown("---")
         
@@ -97,5 +97,6 @@ else:
 
     except Exception as e:
         st.error(f"Terjadi Kesalahan: {e}")
+
 
 
