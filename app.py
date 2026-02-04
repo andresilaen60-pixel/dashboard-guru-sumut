@@ -2,29 +2,27 @@ import streamlit as st
 import pandas as pd
 from st_gsheets_connection import GSheetsConnection
 
-# Atur Judul Tab Browser
+# Pengaturan dasar halaman
 st.set_page_config(page_title="Dashboard Guru Sumut", layout="wide")
 
-# --- LOGIKA LOGIN ---
+# --- SISTEM LOGIN ---
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
 
 if not st.session_state["logged_in"]:
+    # Tampilan Halaman Login
     st.title("🔐 Login Dashboard Disdik Sumut")
-    with st.form("login_form"):
+    with st.form("form_login"):
         user = st.text_input("Username")
-        pw = st.text_input("Password", type="password")
-        submit = st.form_submit_button("Masuk")
-        if submit:
-            if user == "admin" and pw == "sumut2026":
+        pasw = st.text_input("Password", type="password")
+        if st.form_submit_button("Masuk"):
+            if user == "admin" and pasw == "sumut2026":
                 st.session_state["logged_in"] = True
                 st.rerun()
             else:
                 st.error("Username atau Password Salah!")
 else:
-    # --- HALAMAN DASHBOARD (SEMUA HARUS MENJOROK KE DALAM) ---
-    
-    # Tombol Logout di Sidebar
+    # --- TAMPILAN DASHBOARD (JIKA SUDAH LOGIN) ---
     if st.sidebar.button("Logout / Keluar"):
         st.session_state["logged_in"] = False
         st.rerun()
@@ -32,14 +30,14 @@ else:
     st.title("📊 Dashboard Database Guru Dinas Pendidikan Sumut")
     st.markdown("---")
 
-    # Koneksi ke Google Sheets
+    # Bagian Menampilkan Data Google Sheets
     try:
         conn = st.connection("gsheets", type=GSheetsConnection)
         df = conn.read()
         
-        # Tampilkan Data
-        st.subheader("Rekapitulasi Data Usulan")
+        # Tampilkan Tabel
+        st.subheader("Data Usulan Masuk")
         st.dataframe(df, use_container_width=True)
         
     except Exception as e:
-        st.error(f"Gagal memuat data dari Google Sheets. Pastikan Secrets sudah benar. Error: {e}")
+        st.error(f"Koneksi Google Sheets Bermasalah. Pastikan Secrets sudah diisi. Error: {e}")
