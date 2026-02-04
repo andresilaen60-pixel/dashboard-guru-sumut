@@ -22,12 +22,10 @@ if not st.session_state["logged_in"]:
 else:
     # --- HALAMAN DASHBOARD UTAMA ---
     
-    # REVISI LINK: Mengarahkan langsung ke sheet 'Data_Usulan_KP' menggunakan GID
-    # GID 1416024160 adalah ID untuk sheet Data_Usulan_KP berdasarkan data Bapak sebelumnya
+    # Link menuju sheet 'Data_Usulan_KP' (GID: 1416024160)
     sheet_url = "https://docs.google.com/spreadsheets/d/1ASCcp72gr0JD8ynsS7PpeTxzaAYMH2upgR0IL2YGLw0/export?format=csv&gid=1416024160"
     
     try:
-        # Mengambil data
         df = pd.read_csv(sheet_url)
 
         # --- SIDEBAR NAVIGASI & FILTER ---
@@ -35,37 +33,34 @@ else:
         
         search_nama = st.sidebar.text_input("🔍 Cari Nama Guru")
 
-        # Filter Jabatan
-        if 'Jabatan' in df.columns:
-            list_jabatan = ["Semua"] + sorted(df['Jabatan'].dropna().unique().tolist())
-            filter_jabatan = st.sidebar.selectbox("👨‍🏫 Filter Jabatan", list_jabatan)
-        else:
-            filter_jabatan = "Semua"
+        # 1. Filter Jabatan
+        list_jabatan = ["Semua"] + sorted(df['Jabatan'].dropna().unique().tolist()) if 'Jabatan' in df.columns else ["Semua"]
+        filter_jabatan = st.sidebar.selectbox("👨‍🏫 Filter Jabatan", list_jabatan)
 
-        # Filter Golongan
+        # 2. Filter Golongan
         kolom_gol = 'Golongan / Pangkat Saat Ini' if 'Golongan / Pangkat Saat Ini' in df.columns else df.columns[5]
         list_golongan = ["Semua"] + sorted(df[kolom_gol].dropna().unique().tolist())
         filter_golongan = st.sidebar.selectbox("📈 Filter Golongan", list_golongan)
 
-        # Filter Periode
+        # 3. Filter Periode Usulan (Jan - Des 2026)
         list_periode = ["Semua", "Januari 2026", "Februari 2026", "Maret 2026", "April 2026", "Mei 2026", 
                         "Juni 2026", "Juli 2026", "Agustus 2026", "September 2026", "Oktober 2026", 
                         "November 2026", "Desember 2026"]
         filter_periode = st.sidebar.selectbox("📅 Periode Usulan 2026", list_periode)
 
-        # Filter Status Berkas
+        # 4. Filter Status Berkas
         kolom_status = 'Status Berkas'
         if kolom_status in df.columns:
             list_status = ["Semua"] + sorted(df[kolom_status].dropna().unique().tolist())
             filter_status = st.sidebar.selectbox("📁 Status Berkas", list_status)
         else:
             filter_status = "Semua"
+            st.sidebar.info("Kolom 'Status Berkas' tidak ditemukan")
 
         # --- LOGIKA PENYARINGAN DATA ---
         df_filtered = df.copy()
         
         if search_nama:
-            # Sesuaikan nama kolom pencarian dengan yang ada di sheet Data_Usulan_KP
             kolom_nama = 'Nama Lengkap (Sesuai SK Terakhir)' if 'Nama Lengkap (Sesuai SK Terakhir)' in df.columns else df.columns[2]
             df_filtered = df_filtered[df_filtered[kolom_nama].astype(str).str.contains(search_nama, case=False, na=False)]
         
@@ -73,18 +68,18 @@ else:
             df_filtered = df_filtered[df_filtered['Jabatan'] == filter_jabatan]
         
         if filter_golongan != "Semua":
-            df_filtered = df_filtered[df_filtered[kolom_gol'] == filter_golongan]
+            df_filtered = df_filtered[df_filtered[kolom_gol] == filter_golongan] # Perbaikan kutipan di sini
             
         if filter_periode != "Semua":
             kolom_periode = 'Periode Usulan' if 'Periode Usulan' in df.columns else df.columns[3]
             df_filtered = df_filtered[df_filtered[kolom_periode].astype(str).str.contains(filter_periode.split()[0], case=False, na=False)]
             
-        if filter_status != "Semua":
+        if filter_status != "Semua" and kolom_status in df.columns:
             df_filtered = df_filtered[df_filtered[kolom_status] == filter_status]
 
         # --- TAMPILAN UTAMA ---
         st.title("📊 Dashboard Database Guru Dinas Pendidikan Sumut")
-        st.info("Menampilkan data dari lembar: **Data_Usulan_KP**")
+        st.caption("Sumber Data: Sheet **Data_Usulan_KP**")
         st.markdown("---")
         
         col1, col2, col3 = st.columns(3)
@@ -92,14 +87,14 @@ else:
         col2.metric("Hasil Filter", len(df_filtered))
         col3.metric("Status Server", "Online ✅")
 
-        st.subheader("📋 Rekapitulasi Data Usulan Masuk")
+        st.subheader("📋 Rekapitulasi Data Usulan")
         st.dataframe(df_filtered, use_container_width=True)
 
-        # --- TOMBOL LOGOUT (Paling Bawah) ---
-        st.sidebar.markdown("<br>" * 10, unsafe_allow_html=True)
+        # --- TOMBOL LOGOUT (Posisi Paling Bawah) ---
+        st.sidebar.markdown("<br>" * 12, unsafe_allow_html=True)
         if st.sidebar.button("🚪 Keluar / Logout", use_container_width=True):
             st.session_state["logged_in"] = False
             st.rerun()
 
     except Exception as e:
-        st.error(f"Gagal memuat sheet 'Data_Usulan_KP'. Pastikan nama sheet benar. Error: {e}")
+        st.error(f"Terjadi Kesalahan: {e}")
